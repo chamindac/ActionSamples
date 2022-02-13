@@ -1,4 +1,4 @@
-name: Azure CLI
+name: Bicep Deploy
 
 on:
   workflow_dispatch:
@@ -15,7 +15,7 @@ env:
   templateFile: './BicepDemo/Infra/main.bicep'
     
 jobs:
-  azure-cli-commands:
+  bicep-commands:
     runs-on: ubuntu-latest
     
     steps:
