@@ -1,0 +1,39 @@
+name: Azure CLI
+
+on:
+  workflow_dispatch:
+
+env:
+  rgLocation: 'centralus'
+  rgName: 'rg-githubbicep-001'
+  planName: 'plan-githubbicep-001'
+  planSKUName: 'B3' 
+  planSKUCapacity: 1
+  planKind: 'linux'
+  webappName: 'app-githubbicep-001'
+  linuxFxVersion: '"node|16-lts"'
+  templateFile: './BicepDemo/Infra/main.bicep'
+    
+jobs:
+  azure-cli-commands:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 'Az CLI login'
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: 'What happens if'
+        shell: pwsh
+        run: |
+          az deployment sub create --location ${{ env.rgLocation }} `
+                --template-file ${{ env.templateFile }} `
+                --parameters rgName=${{ env.rgName }} `
+                rgLocation=${{ env.rgLocation }} `
+                planName=${{ env.planName }} `
+                planSKUName=${{ env.planSKUName }} `
+                planSKUCapacity=${{ env.planSKUCapacity }} `
+                planKind=${{ env.planKind }} `
+                webappName=${{ env.webappName }} `
+                linuxFxVersion=${{ env.linuxFxVersion }} --what-if

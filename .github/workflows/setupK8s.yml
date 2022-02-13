@@ -1,0 +1,33 @@
+on: [workflow_dispatch]
+name: Deploy AKS
+
+jobs:
+  deploy-aks:
+    runs-on: windows-latest
+    
+    env:
+      runid: ${{github.run_id}}
+      githubtoken: ${{ secrets.GITHUB_TOKEN }}
+      aksRgName: rg-ch-demo-004
+      aksLocation: eastus
+      aksClusterName: aks-ch-demo-004
+      aksClusterNodeCount: 1
+      aksk8sversion: 1.22
+      aksacrName: acrch-demo-004
+      aksacrSku: Standard
+      
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2.3.4
+      
+      - name: 'Az CLI login'
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS_CHAMINDA }}
+
+      - name: 'Run az commands'
+        shell: powershell
+        run: |
+          az group create --name ${{ env.aksRgName }} --location ${{ env.aksLocation }}
+          az acr create -n ${{ env.aksacrName }} -g ${{ env.aksRgName }} --sku ${{ env.aksRgName }}
+          az aks create --resource-group ${{ env.aksRgName }} --name ${{ env.aksClusterName }} --node-count ${{ env.aksClusterNodeCount }} --kubernetes-version ${{ env.aksk8sversion }} --enable-rbac --attach-acr ${{ env.aksacrName }} --generate-ssh-keys
