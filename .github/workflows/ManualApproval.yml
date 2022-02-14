@@ -1,0 +1,24 @@
+name: Manual Approval Demo
+
+on:
+  workflow_dispatch:
+    
+jobs:
+  Pre-Dev-Steps:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 'Run some predev steps'
+        shell: pwsh
+        run: |
+          Write-Host 'Done some pre dev env deploy work'
+
+  Dev-Env:
+      runs-on: ubuntu-latest
+      env:
+        name: DevEnv
+      steps:
+        - name: 'Run some dev env steps'
+          shell: pwsh
+          run: |
+            Write-Host 'Done some dev env deploy work'
