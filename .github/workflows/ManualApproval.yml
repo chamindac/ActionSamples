@@ -15,7 +15,8 @@ jobs:
 
   Dev-Env:
       runs-on: ubuntu-latest
-      env:
+      needs: Pre-Dev-Steps
+      environment:
         name: DevEnv
       steps:
         - name: 'Run some dev env steps'
