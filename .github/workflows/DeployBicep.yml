@@ -15,7 +15,7 @@ env:
   templateFile: './BicepDemo/Infra/main.bicep'
     
 jobs:
-  bicep-commands:
+  Pre-Dev:
     runs-on: ubuntu-latest
     
     steps:
@@ -40,3 +40,32 @@ jobs:
                 planKind=${{ env.planKind }} `
                 webappName=${{ env.webappName }} `
                 linuxFxVersion=${{ env.linuxFxVersion }} --what-if
+
+  Dev:
+    runs-on: ubuntu-latest
+    needs: Pre-Dev
+    environment:
+      name: DevEnv
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2.3.4
+        
+      - name: 'Az CLI login'
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: 'Deploy Dev Resources with Bicep'
+        shell: pwsh
+        run: |
+          az deployment sub create --location ${{ env.rgLocation }} `
+                --template-file ${{ env.templateFile }} `
+                --parameters rgName=${{ env.rgName }} `
+                rgLocation=${{ env.rgLocation }} `
+                planName=${{ env.planName }} `
+                planSKUName=${{ env.planSKUName }} `
+                planSKUCapacity=${{ env.planSKUCapacity }} `
+                planKind=${{ env.planKind }} `
+                webappName=${{ env.webappName }} `
+                linuxFxVersion=${{ env.linuxFxVersion }}
